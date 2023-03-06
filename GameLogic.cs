@@ -4,47 +4,45 @@ using System.Threading;
 
 namespace CyberHW_Pacmen
 {
-    class Game
+    class GameLogic
     {
         private Map map = new Map();
         private User user;
         private List<Enemy> enemies;
         List<Thread> enemiesParameterizedThreads;
-
-        public byte level = 0;
-
-        
+        public int level = 0;
         private Object locker = -1;
 
-        public Game()
+        public GameLogic()
         {
             InitNewMap();
         }
+
         public void EnemyAction(object enemy_index)
         {
             int index = (int)enemy_index;
             this.enemies[index].lastWay = enemies[index].ChosingWay();
-            Enemy.Way new_way; 
-            do
+            Enemy.Way new_way;
+            while (!IsLose()) 
             {
-                if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].lastWay)))
-                {
-                    this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].lastWay));
-                    this.map.NewCreationPos(this.enemies[index]);
-                    Thread.Sleep(this.enemies[index].GetSpeed);
-                }
-                else
-                {
-                    new_way = enemies[index].ChosingWay();
-                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(new_way)))
+                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].lastWay)))
                     {
-                        this.enemies[index].lastWay = new_way;
-                        this.enemies[index].Move(this.enemies[index].ProcessingWay(new_way));
+                        this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].lastWay));
                         this.map.NewCreationPos(this.enemies[index]);
                         Thread.Sleep(this.enemies[index].GetSpeed);
                     }
-                }
-            } while (true);
+                    else
+                    {
+                        new_way = enemies[index].ChosingWay();
+                        if (map.IsPosAvailable(this.enemies[index].ProcessingWay(new_way)))
+                        {
+                            this.enemies[index].lastWay = new_way;
+                            this.enemies[index].Move(this.enemies[index].ProcessingWay(new_way));
+                            this.map.NewCreationPos(this.enemies[index]);
+                            Thread.Sleep(this.enemies[index].GetSpeed);
+                        }
+                    }
+            } 
         }
         public void UserAction(ConsoleKey key)
         {
@@ -79,10 +77,20 @@ namespace CyberHW_Pacmen
 
         public void Lose()
         {
-
+            lock (locker)
+            {
+                Console.Clear();
+                level = -1;
+                InitNewMap();
+            }
         }
         public bool IsLose()
         {
+            foreach (var i in this.enemies)
+            {
+                if (this.user.position_x == i.position_x && this.user.position_y == i.position_y) return true;
+            }
+            // Закончилось время
             return false;
         }
         public bool IsWin()
@@ -129,8 +137,7 @@ namespace CyberHW_Pacmen
         {
             Console.SetCursorPosition(0, map.level.area_size_y);
             Console.WriteLine($"Level: {level}\nScore: {map.userPoints}");
-            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nQ - End\nE - Stop\nPress D to start...");
-
+            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nEnter - Restart\nEsc - End\nPress D to start...");
         }
     }
 }

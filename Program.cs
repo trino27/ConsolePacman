@@ -9,26 +9,33 @@ namespace CyberHW_Pacmen
         {
             Object locker = -1;
             Console.CursorVisible = false;
-            Game game = new Game();
-
-            Thread threadViewer = new Thread(game.MapAction);
-            threadViewer.Start();
-
             ConsoleKey key;
-            key = Console.ReadKey().Key;
             do
             {
-                if (Console.KeyAvailable)
+                GameLogic game = new GameLogic();
+
+                Thread threadViewer = new Thread(game.MapAction);
+                threadViewer.Start();
+
+                key = Console.ReadKey(true).Key;
+                do
                 {
-                    key = Console.ReadKey(true).Key;
-                }
-                game.UserAction(key);
-                if(game.IsWin())
-                {
-                    game.NextLevel();
-                }
-            } while (key != ConsoleKey.Q);
-            // End all threads
+                    if (Console.KeyAvailable)
+                    {
+                        key = Console.ReadKey(true).Key;
+                    }
+                    game.UserAction(key);
+                    if (game.IsWin())
+                    {
+                        game.NextLevel();
+                    }
+                    if(game.IsLose())
+                    {
+                        game.Lose();
+                    }
+                } while (key != ConsoleKey.Escape || key != ConsoleKey.Enter);
+                // End all threads
+            } while (key != ConsoleKey.Escape);
         }
 
     }

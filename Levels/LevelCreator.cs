@@ -6,6 +6,7 @@ namespace CyberHW_Pacmen
 {
     abstract class LevelCreator
     {
+        //max time
         public readonly int area_size_x;
         public readonly int area_size_y;
 

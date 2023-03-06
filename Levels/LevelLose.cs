@@ -4,10 +4,10 @@ using System.Text;
 
 namespace CyberHW_Pacmen
 {
-    class LevelStart : LevelCreator
+    class LevelLose : LevelCreator
     {
-        public LevelStart() 
-            : base(18, 17, 3, 15, 14, 15, false)
+        public LevelLose() 
+            : base(13, 13, 1, 1, 12, 1, true)
         {
             BoundsBuilder();
         }

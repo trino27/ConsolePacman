@@ -92,10 +92,11 @@ namespace CyberHW_Pacmen
             else return false;
         }
 
-        public void InitMap(byte lvl_num)
+        public void InitMap(int lvl_num)
         {
             switch (lvl_num)
             {
+                case -1: { level = new LevelLose(); } break;
                 case 0: { level = new LevelStart(); } break;
                 case 1: { level = new Level1(); } break;
                 case 2: { level = new Level2(); } break;

@@ -17,18 +17,21 @@ namespace CyberHW_Pacmen
 
             threadViewer.Start();
 
-            
+
             ConsoleKey key;
             // Press 1 to start
             key = Console.ReadKey().Key;
             do
             {
-                    if (Console.KeyAvailable)
-                    {
-
-                        key = Console.ReadKey(true).Key;
-                    }
-                    game.UserAction(key);
+                if (Console.KeyAvailable)
+                {
+                    key = Console.ReadKey(true).Key;
+                }
+                game.UserAction(key);
+                if(game.IsWin())
+                {
+                    game.NextLevel();
+                }
             } while (key != ConsoleKey.D0);
             // End all threads
         }

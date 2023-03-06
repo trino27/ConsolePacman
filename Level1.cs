@@ -5,7 +5,7 @@ namespace CyberHW_Pacmen
     class Level1 : LevelCreator
     {
         public Level1()
-            : base(15, 15, 3, 12, 14, 1) // Розмір карти, стартові координати гравця та координати фінішу 
+            : base(15, 15, 3, 12, 14, 1, false) // Розмір карти, стартові координати гравця та координати фінішу 
         {
             BoundsBuilder();
 

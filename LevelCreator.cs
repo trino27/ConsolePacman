@@ -14,6 +14,7 @@ namespace CyberHW_Pacmen
 
         public readonly int finish_pos_x;
         public readonly int finish_pos_y;
+        public readonly bool IsLastLevel;
 
         protected List<KeyValuePair<int,int>> enemies_pos = new List<KeyValuePair<int, int>>();
         public List<KeyValuePair<int, int>> GetEnemiesPos { get { return enemies_pos; } }
@@ -21,7 +22,7 @@ namespace CyberHW_Pacmen
         protected List<KeyValuePair<int, int>> borders = new List<KeyValuePair<int, int>>(); 
         public List<KeyValuePair<int, int>> GetLevelBorders { get { return borders; } }
 
-        protected LevelCreator(int area_size_X, int area_size_Y, int user_start_pos_X, int user_start_pos_Y, int finish_pos_X, int finish_pos_Y)
+        protected LevelCreator(int area_size_X, int area_size_Y, int user_start_pos_X, int user_start_pos_Y, int finish_pos_X, int finish_pos_Y, bool IsLastLevel)
         {
             if((area_size_X <= 0 || area_size_Y <= 0)
                 || (user_start_pos_X <= 0 || user_start_pos_X >= area_size_X)
@@ -31,6 +32,8 @@ namespace CyberHW_Pacmen
             {
                 throw new Exception("Bad value");
             }
+            this.IsLastLevel = IsLastLevel;
+
             area_size_x = area_size_X+1;
             area_size_y = area_size_Y+1;
 

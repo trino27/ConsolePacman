@@ -6,17 +6,13 @@ namespace CyberHW_Pacmen
 {
     class Game
     {
-        Map map = new Map();
+        private Map map = new Map();
+        private User user;
+        private List<Enemy> enemies;
 
-        User user;
-        List<Enemy> enemies;
+        public byte level = 0;
 
-        public byte level = 1;
-        public UInt32 numOfEnemies;
-
-        public bool IsStop = false;
-        public bool IsWin = false;
-
+        private UInt32 numOfEnemies;
         private ConsoleKey lastKey;
         private Object locker = -1;
 
@@ -30,28 +26,22 @@ namespace CyberHW_Pacmen
         }
         public void UserAction(ConsoleKey key)
         {
-            
                 if (ConsoleKey.W == key || ConsoleKey.S == key || ConsoleKey.D == key || ConsoleKey.A == key)
                 {
-                    if (map.TryMove(this.user.InputMoveKey(key)))
+                    if (map.IsPosAvailable(this.user.InputMoveKey(key)))
                     {
                         lastKey = key;
                         this.user.Move(this.user.InputMoveKey(key));
-                        // IsWin?
-                        // IsSamePosWithEnemy
-                        this.map.ChangeMap(this.user);
+                        this.map.NewCreationPos(this.user);
                         Thread.Sleep(this.user.GetSpeed);
                     }
-                    else if (map.TryMove(this.user.InputMoveKey(lastKey)) && lastKey != ConsoleKey.O)
+                    else if (map.IsPosAvailable(this.user.InputMoveKey(lastKey)) && lastKey != ConsoleKey.O)
                     {
                         this.user.Move(this.user.InputMoveKey(lastKey));
-                        // IsWin?
-                        // IsSamePosWithEnemy
-                        this.map.ChangeMap(this.user);
+                        this.map.NewCreationPos(this.user);
                         Thread.Sleep(this.user.GetSpeed);
                     }
                 }
-            
         }
         public void MapAction()
         {
@@ -59,9 +49,26 @@ namespace CyberHW_Pacmen
             {
                 lock (locker)
                 {
-                    ShowMap();
+                    map.ShowMap();
                 }
             } while (true);
+        }
+        
+        public bool IsWin()
+        {
+            if (this.user.position_x == this.map.level.finish_pos_x && this.user.position_y == this.map.level.finish_pos_y) return true;
+            else return false;
+        }
+        public void NextLevel()
+        {
+            lock (locker)
+            {
+                if (!this.map.level.IsLastLevel)
+                {
+                    level++;
+                    InitNewMap();
+                }
+            }
         }
         private void InitNewMap()
         {
@@ -78,53 +85,6 @@ namespace CyberHW_Pacmen
             {
                 throw new Exception("Error number of enemies");
             }
-        }
-
-        private void ShowMap()
-        {
-            for (int y = 0; y < map.level.area_size_y; y++)
-            {
-                for (int x = 0; x < map.level.area_size_x * 2; x++)
-                {
-                    Console.SetCursorPosition(x, y);
-
-                    if (x % 2 == 0)
-                    {
-                        if (map.GetBorderChar == map.area[x / 2, y])
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        }
-                        else if (map.GetEnemyChar == map.area[x / 2, y])
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkRed;
-                        }
-                        else if (map.GetFoodChar == map.area[x / 2, y])
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        }
-                        else if (map.GetFinishChar == map.area[x / 2, y])
-                        {
-                            Console.ForegroundColor = ConsoleColor.Cyan;
-                        }
-                        else if (map.GetPacmenChar == map.area[x / 2, y])
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        }
-                        Console.Write(map.area[x / 2, y]);
-                        Console.ForegroundColor = Console.BackgroundColor;
-                    }
-                    else
-                    {
-                        Console.Write(' ');
-                    }
-                }
-            }
-            Console.ResetColor();
-        }
-        private void NextLevel()
-        {
-            level++;
-            InitNewMap();
         }
     }
 }

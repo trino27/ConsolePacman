@@ -10,16 +10,11 @@ namespace CyberHW_Pacmen
             Object locker = -1;
             Console.CursorVisible = false;
             Game game = new Game();
+
             Thread threadViewer = new Thread(game.MapAction);
-
-            //game.EnemyAction();
-            // thread for each
-
             threadViewer.Start();
 
-
             ConsoleKey key;
-            // Press 1 to start
             key = Console.ReadKey().Key;
             do
             {
@@ -32,7 +27,7 @@ namespace CyberHW_Pacmen
                 {
                     game.NextLevel();
                 }
-            } while (key != ConsoleKey.D0);
+            } while (key != ConsoleKey.Q);
             // End all threads
         }
 

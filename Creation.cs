@@ -25,5 +25,12 @@ namespace CyberHW_Pacmen
             position_y = pos_y;
             lastMove = new KeyValuePair<int, int>(position_x, position_y);
         }
+
+        public void Move(KeyValuePair<int, int> new_pos)
+        {
+            lastMove = new KeyValuePair<int, int>(position_x, position_y);
+            position_x = new_pos.Key;
+            position_y = new_pos.Value;
+        }
     }
 }

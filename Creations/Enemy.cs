@@ -13,7 +13,7 @@ namespace CyberHW_Pacmen
             Left,
             Right
         }
-        public Way lastWay;
+        public Way LastWay;
         public Enemy(int pos_x, int pos_y)
              : base(pos_x, pos_y)
         {

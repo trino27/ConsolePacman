@@ -7,8 +7,10 @@ namespace CyberHW_Pacmen
     {
         static void Main(string[] args)
         {
-            Object locker = -1;
             Console.CursorVisible = false;
+            Console.SetWindowSize(120,40);
+            
+            Object locker = -1;
             GameLogic game = new GameLogic();
             Thread threadViewer = new Thread(game.MapAction);
             threadViewer.Start();
@@ -26,13 +28,12 @@ namespace CyberHW_Pacmen
                             break;
                         }
                     }
-
                     game.UserAction(key);
                     if (game.IsWin())
                     {
                         game.NextLevel();
                     }
-                    if (game.IsLose())
+                    if (game.IsKilled() || game.IsTimeOver())
                     {
                         game.Lose();
                     }
@@ -47,6 +48,7 @@ namespace CyberHW_Pacmen
                     }
                 }
             } while (key != ConsoleKey.Escape);
+
             threadViewer.IsBackground = true;
             Console.Clear();
             Console.SetCursorPosition(0, 0);

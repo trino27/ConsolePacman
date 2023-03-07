@@ -6,7 +6,22 @@ namespace CyberHW_Pacmen
 {
     abstract class LevelCreator
     {
-        //max time
+        private bool isHaveTime = false;
+        public bool IsHaveTimeLimit
+        {
+            get
+            {
+                return isHaveTime;
+            }
+        }
+        private int sec = -1;
+        public int GetSecLimit
+        {
+            get
+            {
+                return sec;
+            }
+        }
         public readonly int area_size_x;
         public readonly int area_size_y;
 
@@ -45,6 +60,11 @@ namespace CyberHW_Pacmen
             finish_pos_y = finish_pos_Y;
         }
 
+        protected void AddTimeLimitSec(UInt32 sec)
+        {
+            this.sec = (int)sec;
+            isHaveTime = true;
+        }
         protected void AddVerticalLine(int x, int start_y, int end_y)
         {
             if (x <= 0 || start_y <= 0 || end_y <= 0 || x >= area_size_x || start_y >= area_size_y || end_y >= area_size_y || start_y > end_y)
@@ -56,7 +76,6 @@ namespace CyberHW_Pacmen
                 borders.Add(new KeyValuePair<int, int>(x, y));
             }
         }
-
         protected void AddHorizontallyLine(int y, int start_x, int end_x)
         {
             if (y <= 0 || start_x <= 0 || end_x <= 0 || y >= area_size_y || start_x >= area_size_x || end_x >= area_size_x || start_x > end_x)
@@ -68,7 +87,6 @@ namespace CyberHW_Pacmen
                 borders.Add(new KeyValuePair<int, int>(x, y));
             }
         }
-
         protected void BoundsBuilder()
         {
             for (int x = 0; x < area_size_x; x++)

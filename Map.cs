@@ -6,52 +6,52 @@ namespace CyberHW_Pacmen
 {
     class Map
     {
-        public char[,] area;
-        public LevelCreator level;
-        public int userPoints;
+        public char[,] Area;
+        public LevelCreator Level;
+        public int UserScore;
 
         private List<KeyValuePair<int, int>> empty_chars;
 
-        private const char EmptyChar = ' ';
-        private const char BorderChar = '#';
-        private const char FoodChar = '+';
-        private const char EnemyChar = '@';
-        private const char PacmanChar = 'G';
-        private const char FinishChar = '0';
+        private const char emptyChar = ' ';
+        private const char borderChar = '#';
+        private const char foodChar = '+';
+        private const char enemyChar = '@';
+        private const char pacmanChar = 'G';
+        private const char finishChar = '0';
 
         public void ShowMap()
         {
-            for (int y = 0; y < level.area_size_y; y++)
+            for (int y = 0; y < Level.area_size_y; y++)
             {
-                for (int x = 0; x < level.area_size_x * 2; x++)
+                for (int x = 0; x < Level.area_size_x * 2; x++)
                 {
                     Console.SetCursorPosition(x, y);
 
                     if (x % 2 == 0)
                     {
-                        if (BorderChar == area[x / 2, y])
+                        if (borderChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.DarkBlue;
                         }
-                        else if (EnemyChar == area[x / 2, y])
+                        else if (enemyChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.DarkRed;
                         }
-                        else if (FoodChar == area[x / 2, y])
+                        else if (foodChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.DarkGreen;
                         }
-                        else if (FinishChar == area[x / 2, y])
+                        else if (finishChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.Cyan;
                         }
-                        else if (PacmanChar == area[x / 2, y])
+                        else if (pacmanChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.DarkYellow;
                         }
                         if (Thread.CurrentThread.IsAlive)
                         {
-                            Console.Write(area[x / 2, y]);
+                            Console.Write(Area[x / 2, y]);
                         }
                         Console.ForegroundColor = Console.BackgroundColor;
                     }
@@ -69,33 +69,33 @@ namespace CyberHW_Pacmen
 
         public void NewCreationPos(Creation creation)
         {
-            if (area[creation.GetLastMove.Key, creation.GetLastMove.Value] == PacmanChar)
+            if (Area[creation.GetLastMove.Key, creation.GetLastMove.Value] == pacmanChar)
             {
                 if (!empty_chars.Contains(new KeyValuePair<int, int>(creation.position_x, creation.position_y)))
                 {
-                    userPoints++;
+                    UserScore++;
                     empty_chars.Add(new KeyValuePair<int, int>(creation.position_x, creation.position_y));
                 }
-                area[creation.position_x, creation.position_y] = PacmanChar;
+                Area[creation.position_x, creation.position_y] = pacmanChar;
             }
             else
             {
-                area[creation.position_x, creation.position_y] = EnemyChar;
+                Area[creation.position_x, creation.position_y] = enemyChar;
             }
 
             if (empty_chars.Contains(creation.GetLastMove))
             {
-                area[creation.GetLastMove.Key, creation.GetLastMove.Value] = EmptyChar;
+                Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = emptyChar;
             }
             else
             {
-                area[creation.GetLastMove.Key, creation.GetLastMove.Value] = FoodChar;
+                Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = foodChar;
             }
 
         }
         public bool IsPosAvailable(KeyValuePair<int, int> try_pos)
         {
-            if (area[try_pos.Key, try_pos.Value] != BorderChar) return true;
+            if (Area[try_pos.Key, try_pos.Value] != borderChar) return true;
             else return false;
         }
 
@@ -103,24 +103,24 @@ namespace CyberHW_Pacmen
         {
             switch (lvl_num)
             {
-                case -1: { level = new LevelLose(); } break;
-                case 0: { level = new LevelStart(); } break;
-                case 1: { level = new Level1(); } break;
-                case 2: { level = new Level2(); } break;
-                case 3: { level = new Level3(); } break;
-                case 4: { level = new LevelWin(); } break;
+                case -1: { Level = new LevelLose(); } break;
+                case 0: { Level = new LevelStart(); } break;
+                case 1: { Level = new Level1(); } break;
+                case 2: { Level = new Level2(); } break;
+                case 3: { Level = new Level3(); } break;
+                case 4: { Level = new LevelWin(); } break;
                 default: throw new Exception("Unknown Error");
             }
             InitArea();
         }
         public User InitUser()
         {
-            return new User(level.user_pos_x, level.user_pos_y);
+            return new User(Level.user_pos_x, Level.user_pos_y);
         }
         public List<Enemy> InitEnemies()
         {
             List<Enemy> enemies = new List<Enemy>();
-            foreach (var i in level.GetEnemiesPos)
+            foreach (var i in Level.GetEnemiesPos)
             {
                 enemies.Add(new Enemy(i.Key, i.Value));
             }
@@ -129,36 +129,36 @@ namespace CyberHW_Pacmen
 
         private void InitArea()
         {
-            area = new char[level.area_size_x, level.area_size_y];
+            Area = new char[Level.area_size_x, Level.area_size_y];
             empty_chars = new List<KeyValuePair<int, int>>();
 
-            for (int x = 0; x < level.area_size_x; x++)
+            for (int x = 0; x < Level.area_size_x; x++)
             {
-                for (int y = 0; y < level.area_size_y; y++)
+                for (int y = 0; y < Level.area_size_y; y++)
                 {
 
-                    if (level.GetLevelBorders.Contains(new KeyValuePair<int, int>(x, y)))
+                    if (Level.GetLevelBorders.Contains(new KeyValuePair<int, int>(x, y)))
                     {
-                        area[x, y] = BorderChar;
+                        Area[x, y] = borderChar;
                     }
-                    else if (level.GetEnemiesPos.Contains(new KeyValuePair<int, int>(x, y)))
+                    else if (Level.GetEnemiesPos.Contains(new KeyValuePair<int, int>(x, y)))
                     {
-                        area[x, y] = EnemyChar;
+                        Area[x, y] = enemyChar;
                         empty_chars.Add(new KeyValuePair<int, int>(x, y));
 
                     }
-                    else if (level.user_pos_x == x && level.user_pos_y == y)
+                    else if (Level.user_pos_x == x && Level.user_pos_y == y)
                     {
-                        area[x, y] = PacmanChar;
+                        Area[x, y] = pacmanChar;
                         empty_chars.Add(new KeyValuePair<int, int>(x, y));
                     }
-                    else if (level.finish_pos_x == x && level.finish_pos_y == y)
+                    else if (Level.finish_pos_x == x && Level.finish_pos_y == y)
                     {
-                        area[x, y] = FinishChar;
+                        Area[x, y] = finishChar;
                     }
                     else
                     {
-                        area[x, y] = FoodChar;
+                        Area[x, y] = foodChar;
                     }
                 }
             }

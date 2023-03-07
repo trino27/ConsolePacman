@@ -6,7 +6,7 @@ namespace CyberHW_Pacmen
 {
     class User : Creation
     {
-        public ConsoleKey lastKey;
+        public ConsoleKey LastKey;
         public User(int pos_x, int pos_y)
              : base(pos_x, pos_y) 
         {

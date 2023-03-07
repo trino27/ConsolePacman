@@ -9,11 +9,14 @@ namespace CyberHW_Pacmen
         private Map map = new Map();
         private User user;
         private List<Enemy> enemies;
-        private Object locker = -1;
-        private bool AlreadyLose = false;
         private List<Thread> enemiesParameterizedThreads;
-        public int level = 0;
-        public bool IsPause = false;
+        private Object locker = -1;
+
+        private bool already_lose = false;
+        private bool isPause = false;
+
+        public int CurrentTime = 0;
+        public int Level = 0;
 
         public GameLogic()
         {
@@ -23,19 +26,32 @@ namespace CyberHW_Pacmen
             }
         }
 
-        public void EnemyAction(object enemy_index)
+        private void TimerAction(object obj_sec)
+        {
+            do
+            {
+                IsTimeOver();
+                if (!isPause)
+                {
+                    Thread.Sleep(1000);
+                    CurrentTime++;
+                }
+            } while (!already_lose);
+
+        }
+        private void EnemyAction(object enemy_index)
         {
             int index = (int)enemy_index;
-            this.enemies[index].lastWay = enemies[index].ChosingWay();
+            this.enemies[index].LastWay = enemies[index].ChosingWay();
             Enemy.Way new_way;
 
-            while (!AlreadyLose && index < enemies.Count)
+            while (!already_lose && index < enemies.Count)
             {
-                if (!IsPause)
+                if (!isPause)
                 {
-                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].lastWay)))
+                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].LastWay)))
                     {
-                        this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].lastWay));
+                        this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].LastWay));
                         this.map.NewCreationPos(this.enemies[index]);
                         if (Thread.CurrentThread.IsAlive)
                         {
@@ -47,55 +63,56 @@ namespace CyberHW_Pacmen
                         new_way = enemies[index].ChosingWay();
                         if (map.IsPosAvailable(this.enemies[index].ProcessingWay(new_way)))
                         {
-                            this.enemies[index].lastWay = new_way;
+                            this.enemies[index].LastWay = new_way;
                             this.enemies[index].Move(this.enemies[index].ProcessingWay(new_way));
                             this.map.NewCreationPos(this.enemies[index]);
                             Thread.Sleep(this.enemies[index].GetSpeed);
                         }
                     }
-                    IsLose();
+                    if (IsKilled()) already_lose = true;
                 }
             }
         }
+
         public void UserAction(ConsoleKey key)
         {
 
-            if ((ConsoleKey.W == key || ConsoleKey.S == key || ConsoleKey.D == key || ConsoleKey.A == key) && !IsPause)
+            if ((ConsoleKey.W == key || ConsoleKey.S == key || ConsoleKey.D == key || ConsoleKey.A == key) && !isPause)
             {
                 if (map.IsPosAvailable(this.user.ProcessingKey(key)))
                 {
-                    this.user.lastKey = key;
+                    this.user.LastKey = key;
                     this.user.Move(this.user.ProcessingKey(key));
                     this.map.NewCreationPos(this.user);
                     Thread.Sleep(this.user.GetSpeed);
                 }
-                else if (map.IsPosAvailable(this.user.ProcessingKey(this.user.lastKey)) && this.user.lastKey != ConsoleKey.O)
+                else if (map.IsPosAvailable(this.user.ProcessingKey(this.user.LastKey)) && this.user.LastKey != ConsoleKey.O)
                 {
-                    this.user.Move(this.user.ProcessingKey(this.user.lastKey));
+                    this.user.Move(this.user.ProcessingKey(this.user.LastKey));
                     this.map.NewCreationPos(this.user);
                     Thread.Sleep(this.user.GetSpeed);
                 }
             }
-            else if (key == ConsoleKey.P && !IsPause)
+            else if (key == ConsoleKey.P && !isPause)
             {
-                if (IsPause != true) IsPause = true;
-               
+                if (isPause != true) isPause = true;
+
             }
-            else if (key == ConsoleKey.U && IsPause)
+            else if (key == ConsoleKey.U && isPause)
             {
-                    IsPause = false;
-                    if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.lastKey)) && this.user.lastKey != ConsoleKey.O))
-                    {
-                        this.user.Move(this.user.ProcessingKey(this.user.lastKey));
-                        this.map.NewCreationPos(this.user);
-                        Thread.Sleep(this.user.GetSpeed);
-                    }
+                isPause = false;
+                if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.LastKey)) && this.user.LastKey != ConsoleKey.O))
+                {
+                    this.user.Move(this.user.ProcessingKey(this.user.LastKey));
+                    this.map.NewCreationPos(this.user);
+                    Thread.Sleep(this.user.GetSpeed);
+                }
             }
             else
             {
-                if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.lastKey)) && this.user.lastKey != ConsoleKey.O) && !IsPause)
+                if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.LastKey)) && this.user.LastKey != ConsoleKey.O) && !isPause)
                 {
-                    this.user.Move(this.user.ProcessingKey(this.user.lastKey));
+                    this.user.Move(this.user.ProcessingKey(this.user.LastKey));
                     this.map.NewCreationPos(this.user);
                     Thread.Sleep(this.user.GetSpeed);
                 }
@@ -115,66 +132,6 @@ namespace CyberHW_Pacmen
 
         }
 
-        public void Lose()
-        {
-            lock (locker)
-            {
-                NextLevel(-1);
-            }
-        }
-        public bool IsLose()
-        {
-            lock (locker)
-            {
-                foreach (var i in this.enemies)
-                {
-                    if (this.user.position_x == i.position_x && this.user.position_y == i.position_y)
-                    {
-                        AlreadyLose = true;
-                        return true;
-                    }
-                }
-                // Закончилось время
-                return false;
-            }
-        }
-        public bool IsWin()
-        {
-            lock (locker)
-            {
-                if (this.user.position_x == this.map.level.finish_pos_x && this.user.position_y == this.map.level.finish_pos_y) return true;
-                else return false;
-            }
-        }
-        public void NextLevel()
-        {
-            lock (locker)
-            {
-                RemoveAllEnemy();
-                level++;
-                InitNewMap();
-            }
-        }
-        public void NextLevel(int lvl_i)
-        {
-            lock (locker)
-            {
-                RemoveAllEnemy();
-                level = lvl_i;
-                InitNewMap();
-            }
-        }
-        public void Restart()
-        {
-            lock (locker)
-            {
-                RemoveAllEnemy();
-                level = 0;
-                map.userPoints = 0;
-                AlreadyLose = false;
-                InitNewMap();
-            }
-        }
         private void RemoveAllEnemy()
         {
             lock (locker)
@@ -193,19 +150,25 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 Console.Clear();
-                this.map.InitMap(level);
+                this.map.InitMap(Level);
                 this.user = map.InitUser();
 
-                if (!AlreadyLose)
+                if (this.map.Level.IsHaveTimeLimit)
+                {
+                    Thread timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
+                    timerParameterizedThread.Start(this.map.Level.GetSecLimit);
+                }
+                if (!already_lose)
                 {
                     this.enemies = map.InitEnemies();
                     this.enemiesParameterizedThreads = new List<Thread>();
-                    InitEnemyThreds();
+                    InitEnemyThreads();
                 }
-                this.user.lastKey = ConsoleKey.O;
+                this.user.LastKey = ConsoleKey.O;
             }
         }
-        private void InitEnemyThreds()
+
+        private void InitEnemyThreads()
         {
             lock (locker)
             {
@@ -221,9 +184,93 @@ namespace CyberHW_Pacmen
         }
         private void GameInfo()
         {
-            Console.SetCursorPosition(0, map.level.area_size_y);
-            Console.WriteLine($"Level: {level}\nScore: {map.userPoints}");
+            Console.SetCursorPosition(0, map.Level.area_size_y);
+            if (this.map.Level.IsHaveTimeLimit)
+            {
+                Console.WriteLine($"Time: {CurrentTime}/{this.map.Level.GetSecLimit}");
+            }
+            else Console.WriteLine($"Time(sec): Unlimited");
+            Console.SetCursorPosition(0, map.Level.area_size_y + 1);
+            Console.WriteLine($"Level: {Level}\nScore: {map.UserScore}\n");
             Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End\nPress D to start...");
         }
+
+        public bool IsTimeOver()
+        {
+            if (this.map.Level.IsHaveTimeLimit)
+            {
+                lock (locker)
+                {
+                    if (CurrentTime >= this.map.Level.GetSecLimit)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            else return false;
+        }
+        public bool IsKilled()
+        {
+            lock (locker)
+            {
+                foreach (var i in this.enemies)
+                {
+                    if (this.user.position_x == i.position_x && this.user.position_y == i.position_y)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        public bool IsWin()
+        {
+            lock (locker)
+            {
+                if (this.user.position_x == this.map.Level.finish_pos_x && this.user.position_y == this.map.Level.finish_pos_y) return true;
+                else return false;
+            }
+        }
+
+        public void Lose()
+        {
+            lock (locker)
+            {
+                already_lose = true;
+                NextLevel(-1);
+            }
+        }
+        public void NextLevel()
+        {
+            lock (locker)
+            {
+                RemoveAllEnemy();
+                Level++;
+                InitNewMap();
+            }
+        }
+        public void NextLevel(int lvl_i)
+        {
+            lock (locker)
+            {
+                RemoveAllEnemy();
+                Level = lvl_i;
+                InitNewMap();
+            }
+        }
+        public void Restart()
+        {
+            lock (locker)
+            {
+                RemoveAllEnemy();
+                Level = 0;
+                map.UserScore = 0;
+                CurrentTime = 0;
+                already_lose = false;
+                InitNewMap();
+            }
+        }
+
     }
 }

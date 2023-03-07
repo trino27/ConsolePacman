@@ -7,7 +7,7 @@ namespace CyberHW_Pacmen
     class Level2 : LevelCreator
     {
         public Level2()
-            : base(70, 50, 10, 10, 0, 0, false) // Розмір карти та стартові координати гравця
+            : base(15, 15, 1, 1, 14, 14, false) // Розмір карти та стартові координати гравця
         {
            
         }

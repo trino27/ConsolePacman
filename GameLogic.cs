@@ -9,13 +9,18 @@ namespace CyberHW_Pacmen
         private Map map = new Map();
         private User user;
         private List<Enemy> enemies;
-        List<Thread> enemiesParameterizedThreads;
-        public int level = 0;
         private Object locker = -1;
+        private bool AlreadyLose = false;
+        private List<Thread> enemiesParameterizedThreads;
+        public int level = 0;
+        public bool IsPause = false;
 
         public GameLogic()
         {
-            InitNewMap();
+            lock (locker)
+            {
+                InitNewMap();
+            }
         }
 
         public void EnemyAction(object enemy_index)
@@ -23,13 +28,19 @@ namespace CyberHW_Pacmen
             int index = (int)enemy_index;
             this.enemies[index].lastWay = enemies[index].ChosingWay();
             Enemy.Way new_way;
-            while (!IsLose()) 
+
+            while (!AlreadyLose && index < enemies.Count)
             {
+                if (!IsPause)
+                {
                     if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].lastWay)))
                     {
                         this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].lastWay));
                         this.map.NewCreationPos(this.enemies[index]);
-                        Thread.Sleep(this.enemies[index].GetSpeed);
+                        if (Thread.CurrentThread.IsAlive)
+                        {
+                            Thread.Sleep(this.enemies[index].GetSpeed);
+                        }
                     }
                     else
                     {
@@ -42,11 +53,14 @@ namespace CyberHW_Pacmen
                             Thread.Sleep(this.enemies[index].GetSpeed);
                         }
                     }
-            } 
+                    IsLose();
+                }
+            }
         }
         public void UserAction(ConsoleKey key)
         {
-            if (ConsoleKey.W == key || ConsoleKey.S == key || ConsoleKey.D == key || ConsoleKey.A == key)
+
+            if ((ConsoleKey.W == key || ConsoleKey.S == key || ConsoleKey.D == key || ConsoleKey.A == key) && !IsPause)
             {
                 if (map.IsPosAvailable(this.user.ProcessingKey(key)))
                 {
@@ -62,6 +76,31 @@ namespace CyberHW_Pacmen
                     Thread.Sleep(this.user.GetSpeed);
                 }
             }
+            else if (key == ConsoleKey.P && !IsPause)
+            {
+                if (IsPause != true) IsPause = true;
+               
+            }
+            else if (key == ConsoleKey.U && IsPause)
+            {
+                    IsPause = false;
+                    if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.lastKey)) && this.user.lastKey != ConsoleKey.O))
+                    {
+                        this.user.Move(this.user.ProcessingKey(this.user.lastKey));
+                        this.map.NewCreationPos(this.user);
+                        Thread.Sleep(this.user.GetSpeed);
+                    }
+            }
+            else
+            {
+                if ((map.IsPosAvailable(this.user.ProcessingKey(this.user.lastKey)) && this.user.lastKey != ConsoleKey.O) && !IsPause)
+                {
+                    this.user.Move(this.user.ProcessingKey(this.user.lastKey));
+                    this.map.NewCreationPos(this.user);
+                    Thread.Sleep(this.user.GetSpeed);
+                }
+            }
+
         }
         public void MapAction()
         {
@@ -73,71 +112,118 @@ namespace CyberHW_Pacmen
                     GameInfo();
                 }
             } while (true);
+
         }
 
         public void Lose()
         {
             lock (locker)
             {
-                Console.Clear();
-                level = -1;
-                InitNewMap();
+                NextLevel(-1);
             }
         }
         public bool IsLose()
         {
-            foreach (var i in this.enemies)
+            lock (locker)
             {
-                if (this.user.position_x == i.position_x && this.user.position_y == i.position_y) return true;
+                foreach (var i in this.enemies)
+                {
+                    if (this.user.position_x == i.position_x && this.user.position_y == i.position_y)
+                    {
+                        AlreadyLose = true;
+                        return true;
+                    }
+                }
+                // Закончилось время
+                return false;
             }
-            // Закончилось время
-            return false;
         }
         public bool IsWin()
         {
-            if (this.user.position_x == this.map.level.finish_pos_x && this.user.position_y == this.map.level.finish_pos_y) return true;
-            else return false;
+            lock (locker)
+            {
+                if (this.user.position_x == this.map.level.finish_pos_x && this.user.position_y == this.map.level.finish_pos_y) return true;
+                else return false;
+            }
         }
         public void NextLevel()
         {
             lock (locker)
             {
-                if (!this.map.level.IsLastLevel)
-                {
-                    level++;
-                    Console.Clear();
-                    InitNewMap();
-                }
+                RemoveAllEnemy();
+                level++;
+                InitNewMap();
             }
         }
+        public void NextLevel(int lvl_i)
+        {
+            lock (locker)
+            {
+                RemoveAllEnemy();
+                level = lvl_i;
+                InitNewMap();
+            }
+        }
+        public void Restart()
+        {
+            lock (locker)
+            {
+                RemoveAllEnemy();
+                level = 0;
+                map.userPoints = 0;
+                AlreadyLose = false;
+                InitNewMap();
+            }
+        }
+        private void RemoveAllEnemy()
+        {
+            lock (locker)
+            {
+                foreach (var i in enemiesParameterizedThreads)
+                {
+                    if (i.IsAlive) i.IsBackground = true;
+                }
 
+                enemiesParameterizedThreads = new List<Thread>();
+                enemies = new List<Enemy>();
+            }
+        }
         private void InitNewMap()
         {
             lock (locker)
             {
+                Console.Clear();
                 this.map.InitMap(level);
                 this.user = map.InitUser();
-                this.enemies = map.InitEnemies();
 
-                this.enemiesParameterizedThreads = new List<Thread>();
-                InitEnemyThreds();
-
+                if (!AlreadyLose)
+                {
+                    this.enemies = map.InitEnemies();
+                    this.enemiesParameterizedThreads = new List<Thread>();
+                    InitEnemyThreds();
+                }
                 this.user.lastKey = ConsoleKey.O;
             }
         }
         private void InitEnemyThreds()
         {
-            for (int i = 0; i < this.enemies.Count; i++)
+            lock (locker)
             {
-                this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
-                this.enemiesParameterizedThreads[i].Start(i);
+                for (int i = 0; i < this.enemies.Count; i++)
+                {
+                    this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
+                }
+                for (int i = 0; i < this.enemies.Count; i++)
+                {
+                    this.enemiesParameterizedThreads[i].Start(i);
+                }
             }
         }
         private void GameInfo()
         {
             Console.SetCursorPosition(0, map.level.area_size_y);
             Console.WriteLine($"Level: {level}\nScore: {map.userPoints}");
-            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nEnter - Restart\nEsc - End\nPress D to start...");
+            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End\nPress D to start...");
         }
     }
 }

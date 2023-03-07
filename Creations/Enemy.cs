@@ -17,7 +17,7 @@ namespace CyberHW_Pacmen
         public Enemy(int pos_x, int pos_y)
              : base(pos_x, pos_y)
         {
-            speed = 500;
+            speed = 300;
         }
         public Way ChosingWay()
         {

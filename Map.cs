@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CyberHW_Pacmen
 {
@@ -48,12 +49,18 @@ namespace CyberHW_Pacmen
                         {
                             Console.ForegroundColor = ConsoleColor.DarkYellow;
                         }
-                        Console.Write(area[x / 2, y]);
+                        if (Thread.CurrentThread.IsAlive)
+                        {
+                            Console.Write(area[x / 2, y]);
+                        }
                         Console.ForegroundColor = Console.BackgroundColor;
                     }
                     else
                     {
-                        Console.Write(' ');
+                        if (Thread.CurrentThread.IsAlive)
+                        {
+                            Console.Write(' ');
+                        }
                     }
                 }
             }

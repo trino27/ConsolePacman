@@ -274,6 +274,15 @@ namespace CyberHW_Pacmen
                 InitNewMap();
             }
         }
+        public void EndGame()
+        {
+            lock(locker)
+                {
+                already_lose = true;
+                if (timerParameterizedThread.IsAlive) timerParameterizedThread.IsBackground = true;
+                RemoveAllEnemy();
+            }
+        }
 
     }
 }

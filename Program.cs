@@ -48,11 +48,10 @@ namespace CyberHW_Pacmen
                     }
                 }
             } while (key != ConsoleKey.Escape);
-
             threadViewer.IsBackground = true;
+            game.EndGame();
             Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            Console.ResetColor();
+            
         }
     }
 }

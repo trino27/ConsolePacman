@@ -147,6 +147,7 @@ namespace CyberHW_Pacmen
                 {
                     if (i.IsAlive) i.IsBackground = true;
                 }
+                enemiesParameterizedThreads.Clear();
                 enemies = new List<Enemy>();
             }
         }
@@ -269,6 +270,7 @@ namespace CyberHW_Pacmen
                 map.UserScore = 0;
                 CurrentTime = 0;
                 already_lose = false;
+                isPause = false;
                 InitNewMap();
             }
         }

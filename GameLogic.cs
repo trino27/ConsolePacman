@@ -23,6 +23,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
+                enemiesParameterizedThreads = new List<Thread>(10);
                 InitNewMap();
                 timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
                 timerParameterizedThread.Start(this.map.Level.GetSecLimit);
@@ -143,8 +144,6 @@ namespace CyberHW_Pacmen
                 {
                     if (i.IsAlive) i.IsBackground = true;
                 }
-
-                enemiesParameterizedThreads = new List<Thread>();
                 enemies = new List<Enemy>();
             }
         }
@@ -159,25 +158,20 @@ namespace CyberHW_Pacmen
                 if (!already_lose)
                 {
                     enemies = map.InitEnemies();
-                    enemiesParameterizedThreads = new List<Thread>();
                     InitEnemyThreads();
                 }
                 this.user.LastKey = ConsoleKey.O;
             }
         }
-
         private void InitEnemyThreads()
         {
             lock (locker)
             {
-                for (int i = 0; i < this.enemies.Count; i++)
-                {
-                    this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
-                }
-                for (int i = 0; i < this.enemies.Count; i++)
-                {
-                    this.enemiesParameterizedThreads[i].Start(i);
-                }
+                    for (int i = this.enemiesParameterizedThreads.Count; i < this.enemies.Count; i++)
+                    {
+                        this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
+                        this.enemiesParameterizedThreads[i].Start(i);
+                    }
             }
         }
         private void GameInfo()

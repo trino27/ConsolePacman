@@ -22,9 +22,18 @@ namespace CyberHW_Pacmen
                 return sec;
             }
         }
+        private const int MaxEnemies = 10;
+        public int GetMaxEnemies
+        {
+            get
+            {
+                return MaxEnemies;
+            }
+        }
+
         public readonly int area_size_x;
         public readonly int area_size_y;
-
+        
         public readonly int user_pos_x;
         public readonly int user_pos_y;
 
@@ -32,7 +41,7 @@ namespace CyberHW_Pacmen
         public readonly int finish_pos_y;
         public readonly bool IsLastLevel;
 
-        protected List<KeyValuePair<int,int>> enemies_pos = new List<KeyValuePair<int, int>>();
+        protected List<KeyValuePair<int,int>> enemies_pos = new List<KeyValuePair<int, int>>(10);
         public List<KeyValuePair<int, int>> GetEnemiesPos { get { return enemies_pos; } }
 
         protected List<KeyValuePair<int, int>> borders = new List<KeyValuePair<int, int>>(); 

@@ -10,6 +10,7 @@ namespace CyberHW_Pacmen
         private User user;
         private List<Enemy> enemies;
         private List<Thread> enemiesParameterizedThreads;
+        private Thread timerParameterizedThread;
         private Object locker = -1;
 
         private bool already_lose = false;
@@ -23,6 +24,8 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 InitNewMap();
+                timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
+                timerParameterizedThread.Start(this.map.Level.GetSecLimit);
             }
         }
 
@@ -153,15 +156,10 @@ namespace CyberHW_Pacmen
                 this.map.InitMap(Level);
                 this.user = map.InitUser();
 
-                if (this.map.Level.IsHaveTimeLimit)
-                {
-                    Thread timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
-                    timerParameterizedThread.Start(this.map.Level.GetSecLimit);
-                }
                 if (!already_lose)
                 {
-                    this.enemies = map.InitEnemies();
-                    this.enemiesParameterizedThreads = new List<Thread>();
+                    enemies = map.InitEnemies();
+                    enemiesParameterizedThreads = new List<Thread>();
                     InitEnemyThreads();
                 }
                 this.user.LastKey = ConsoleKey.O;
@@ -187,9 +185,9 @@ namespace CyberHW_Pacmen
             Console.SetCursorPosition(0, map.Level.area_size_y);
             if (this.map.Level.IsHaveTimeLimit)
             {
-                Console.WriteLine($"Time: {CurrentTime}/{this.map.Level.GetSecLimit}");
+                Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.GetSecLimit}");
             }
-            else Console.WriteLine($"Time(sec): Unlimited");
+            else Console.WriteLine("Time(sec): Unlimited");
             Console.SetCursorPosition(0, map.Level.area_size_y + 1);
             Console.WriteLine($"Level: {Level}\nScore: {map.UserScore}\n");
             Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End\nPress D to start...");
@@ -246,7 +244,10 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 RemoveAllEnemy();
+
+                CurrentTime = 0;
                 Level++;
+
                 InitNewMap();
             }
         }
@@ -255,7 +256,10 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 RemoveAllEnemy();
+
+                CurrentTime = 0;
                 Level = lvl_i;
+
                 InitNewMap();
             }
         }

@@ -14,7 +14,7 @@ namespace CyberHW_Pacmen
 
         private const char emptyChar = ' ';
         private const char borderChar = '#';
-        private const char foodChar = '+';
+        private const char foodChar = '\'';
         private const char enemyChar = '@';
         private const char pacmanChar = 'G';
         private const char finishChar = '0';
@@ -89,7 +89,14 @@ namespace CyberHW_Pacmen
             }
             else
             {
-                Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = foodChar;
+                if (creation.GetLastMove.Key == Level.finish_pos_x && creation.GetLastMove.Value == Level.finish_pos_y)
+                {
+                    Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = finishChar;
+                }
+                else
+                {
+                    Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = foodChar;
+                }
             }
 
         }

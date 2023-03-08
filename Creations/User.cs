@@ -10,7 +10,7 @@ namespace CyberHW_Pacmen
         public User(int pos_x, int pos_y)
              : base(pos_x, pos_y) 
         {
-            speed = 200;
+            speed = 150;
         }
         public KeyValuePair<int, int> ProcessingKey(ConsoleKey key)
         {

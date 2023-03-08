@@ -8,12 +8,14 @@ namespace CyberHW_Pacmen
             : base(15, 15, 1, 1, 14, 14, false) // Розмір карти та стартові координати гравця
         {
             BoundsBuilder();
-            AddTimeLimitSec(120);
+            AddTimeLimitSec(80);
 
             enemies_pos.Add(new KeyValuePair<int, int>(1, 14));
             enemies_pos.Add(new KeyValuePair<int, int>(7, 7));
             enemies_pos.Add(new KeyValuePair<int, int>(14, 1));
             enemies_pos.Add(new KeyValuePair<int, int>(14, 7));
+            enemies_pos.Add(new KeyValuePair<int, int>(12, 12));
+            enemies_pos.Add(new KeyValuePair<int, int>(12, 10));
 
             AddVerticalLine(2, 4, 5);
             AddVerticalLine(2,9,11);
@@ -40,8 +42,6 @@ namespace CyberHW_Pacmen
             AddHorizontallyLine(9, 12, 14);
             AddHorizontallyLine(11, 11, 13);
             AddHorizontallyLine(13, 6, 10);
-
-            borders.Add(new KeyValuePair<int, int>(12, 13));
         }
     }
 }

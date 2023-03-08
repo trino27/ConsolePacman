@@ -22,14 +22,6 @@ namespace CyberHW_Pacmen
                 return sec;
             }
         }
-        private const int MaxEnemies = 10;
-        public int GetMaxEnemies
-        {
-            get
-            {
-                return MaxEnemies;
-            }
-        }
 
         public readonly int area_size_x;
         public readonly int area_size_y;

@@ -10,7 +10,7 @@ namespace CyberHW_Pacmen
             : base(18, 18, 9, 9, 1, 1, false) // Розмір карти та стартові координати гравця
         {
             BoundsBuilder();
-            AddTimeLimitSec(120);
+            AddTimeLimitSec(90);
 
             enemies_pos.Add(new KeyValuePair<int, int>(7, 1));
             enemies_pos.Add(new KeyValuePair<int, int>(15, 1));
@@ -19,6 +19,9 @@ namespace CyberHW_Pacmen
             enemies_pos.Add(new KeyValuePair<int, int>(9, 13));
             enemies_pos.Add(new KeyValuePair<int, int>(12, 17));
             enemies_pos.Add(new KeyValuePair<int, int>(17, 10));
+            enemies_pos.Add(new KeyValuePair<int, int>(1, 5));
+            enemies_pos.Add(new KeyValuePair<int, int>(8, 5));
+            enemies_pos.Add(new KeyValuePair<int, int>(3, 1));
 
             AddHorizontallyLine(1, 16, 17);
             AddHorizontallyLine(2, 4, 6);
@@ -29,7 +32,7 @@ namespace CyberHW_Pacmen
             AddHorizontallyLine(8, 4, 6);
             AddHorizontallyLine(9, 16, 17);
             AddHorizontallyLine(10, 7, 10);
-            AddHorizontallyLine(12, 1, 2);
+            AddHorizontallyLine(12, 2, 2);
             AddHorizontallyLine(12, 8, 10);
             AddHorizontallyLine(13, 11, 12);
             AddHorizontallyLine(14, 3, 5);
@@ -38,7 +41,7 @@ namespace CyberHW_Pacmen
             AddHorizontallyLine(16, 2, 4);
             AddHorizontallyLine(16, 7, 9);
 
-            borders.Add(new KeyValuePair<int, int>(1, 8));
+           
             borders.Add(new KeyValuePair<int, int>(7, 14));
             borders.Add(new KeyValuePair<int, int>(13, 12));
             borders.Add(new KeyValuePair<int, int>(11, 12));
@@ -55,8 +58,8 @@ namespace CyberHW_Pacmen
             AddVerticalLine(10, 8, 9);
             AddVerticalLine(11, 1, 2);
             AddVerticalLine(11, 16, 17);
-            AddVerticalLine(12, 7, 9);
-            AddVerticalLine(12, 11, 14);
+            AddVerticalLine(12, 7, 10);
+            AddVerticalLine(12, 12, 14);
             AddVerticalLine(13, 1, 2);
             AddVerticalLine(13, 16, 17);
             AddVerticalLine(14, 1, 2);

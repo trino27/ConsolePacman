@@ -23,7 +23,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                enemiesParameterizedThreads = new List<Thread>(10);
+                enemiesParameterizedThreads = new List<Thread>();
                 InitNewMap();
                 timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
                 timerParameterizedThread.Start(this.map.Level.GetSecLimit);
@@ -70,7 +70,10 @@ namespace CyberHW_Pacmen
                             this.enemies[index].LastWay = new_way;
                             this.enemies[index].Move(this.enemies[index].ProcessingWay(new_way));
                             this.map.NewCreationPos(this.enemies[index]);
-                            Thread.Sleep(this.enemies[index].GetSpeed);
+                            if (Thread.CurrentThread.IsAlive)
+                            {
+                                Thread.Sleep(this.enemies[index].GetSpeed);
+                            }
                         }
                     }
                     if (IsKilled()) already_lose = true;

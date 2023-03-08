@@ -23,7 +23,7 @@ namespace CyberHW_Pacmen
             borders.Add(new KeyValuePair<int, int>(9, 2));
             borders.Add(new KeyValuePair<int, int>(13, 3));
             borders.Add(new KeyValuePair<int, int>(14, 4));
-            borders.Add(new KeyValuePair<int, int>(16, 10));
+            borders.Add(new KeyValuePair<int, int>(15, 10));
 
             AddHorizontallyLine(9, 15, 16);
         }

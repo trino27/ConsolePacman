@@ -12,6 +12,7 @@ namespace CyberHW_Pacmen
         private List<Thread> enemiesParameterizedThreads;
         private Thread timerParameterizedThread;
         private Object locker = -1;
+        private int enemy_thread_exist_num=0;
 
         private bool already_lose = false;
         private bool isPause = false;
@@ -143,10 +144,10 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                foreach (var i in enemiesParameterizedThreads)
-                {
-                    if (i.IsAlive) i.IsBackground = true;
-                }
+                //foreach (var i in enemiesParameterizedThreads)
+                //{
+                //    if (i.IsAlive) i.IsBackground = true;
+                //}
                 enemiesParameterizedThreads.Clear();
                 enemies = new List<Enemy>();
             }
@@ -171,11 +172,16 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                    for (int i = this.enemiesParameterizedThreads.Count; i < this.enemies.Count; i++)
-                    {
-                        this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
-                        this.enemiesParameterizedThreads[i].Start(i);
-                    }
+                for (int i = 0; i < enemy_thread_exist_num; i++)
+                {
+                    this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
+                }
+                    for (int i = enemy_thread_exist_num; i < this.enemies.Count; i++)
+                {
+                    this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
+                    enemy_thread_exist_num++;
+                    this.enemiesParameterizedThreads[i].Start(i);
+                }
             }
         }
         private void GameInfo()
@@ -267,6 +273,7 @@ namespace CyberHW_Pacmen
             {
                 RemoveAllEnemy();
                 Level = 0;
+                enemy_thread_exist_num = 0;
                 map.UserScore = 0;
                 CurrentTime = 0;
                 already_lose = false;
@@ -276,8 +283,8 @@ namespace CyberHW_Pacmen
         }
         public void EndGame()
         {
-            lock(locker)
-                {
+            lock (locker)
+            {
                 already_lose = true;
                 if (timerParameterizedThread.IsAlive) timerParameterizedThread.IsBackground = true;
                 RemoveAllEnemy();

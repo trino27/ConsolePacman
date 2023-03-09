@@ -10,7 +10,7 @@ namespace CyberHW_Pacmen
             : base(18, 18, 9, 9, 1, 1, false) // Розмір карти та стартові координати гравця
         {
             BoundsBuilder();
-            AddTimeLimitSec(90);
+            AddTimeLimitSec(80);
 
             enemies_pos.Add(new KeyValuePair<int, int>(7, 1));
             enemies_pos.Add(new KeyValuePair<int, int>(15, 1));

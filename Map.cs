@@ -32,6 +32,7 @@ namespace CyberHW_Pacmen
                         if (borderChar == Area[x / 2, y])
                         {
                             Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
                         }
                         else if (enemyChar == Area[x / 2, y])
                         {
@@ -52,6 +53,7 @@ namespace CyberHW_Pacmen
                         if (Thread.CurrentThread.IsAlive)
                         {
                             Console.Write(Area[x / 2, y]);
+                            Console.BackgroundColor = ConsoleColor.Black;
                         }
                         Console.ForegroundColor = Console.BackgroundColor;
                     }
@@ -59,7 +61,14 @@ namespace CyberHW_Pacmen
                     {
                         if (Thread.CurrentThread.IsAlive)
                         {
-                            Console.Write(' ');
+                            if (x > 0 && x < Level.area_size_x*2-1)
+                            {
+                                if (Area[(x/2)+1, y] == borderChar && Area[x/2, y] == borderChar)
+                                {
+                                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                                }
+                            }
+                            Console.Write(emptyChar);
                         }
                     }
                 }

@@ -18,7 +18,7 @@ namespace CyberHW_Pacmen
         private bool isPause = false;
 
         public int CurrentTime = 0;
-        public int Level = 0;
+        public int CurrentLevel = 0;
 
         public GameLogic()
         {
@@ -41,7 +41,7 @@ namespace CyberHW_Pacmen
                     Thread.Sleep(1000);
                     CurrentTime++;
                 }
-            } while (!already_lose);
+            } while (true);
 
         }
         private void EnemyAction(object enemy_index)
@@ -144,10 +144,6 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                //foreach (var i in enemiesParameterizedThreads)
-                //{
-                //    if (i.IsAlive) i.IsBackground = true;
-                //}
                 enemiesParameterizedThreads.Clear();
                 enemies = new List<Enemy>();
             }
@@ -157,7 +153,7 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 Console.Clear();
-                this.map.InitMap(Level);
+                this.map.InitMap(CurrentLevel);
                 this.user = map.InitUser();
 
                 if (!already_lose)
@@ -187,14 +183,18 @@ namespace CyberHW_Pacmen
         private void GameInfo()
         {
             Console.SetCursorPosition(0, map.Level.area_size_y);
+            if (CurrentLevel == 0)
+            {
+                Console.WriteLine("Press D to start...\n");
+            }
             if (this.map.Level.IsHaveTimeLimit)
             {
                 Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.GetSecLimit}");
             }
             else Console.WriteLine("Time(sec): Unlimited");
-            Console.SetCursorPosition(0, map.Level.area_size_y + 1);
-            Console.WriteLine($"Level: {Level}\nScore: {map.UserScore}\n");
-            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End\nPress D to start...");
+            Console.WriteLine($"Level: {CurrentLevel}\nScore: {map.UserScore}\n");
+            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End");
+            
         }
 
         public bool IsTimeOver()
@@ -250,7 +250,7 @@ namespace CyberHW_Pacmen
                 RemoveAllEnemy();
 
                 CurrentTime = 0;
-                Level++;
+                CurrentLevel++;
 
                 InitNewMap();
             }
@@ -262,7 +262,7 @@ namespace CyberHW_Pacmen
                 RemoveAllEnemy();
 
                 CurrentTime = 0;
-                Level = lvl_i;
+                CurrentLevel = lvl_i;
 
                 InitNewMap();
             }
@@ -272,7 +272,7 @@ namespace CyberHW_Pacmen
             lock (locker)
             {
                 RemoveAllEnemy();
-                Level = 0;
+                CurrentLevel = 0;
                 enemy_thread_exist_num = 0;
                 map.UserScore = 0;
                 CurrentTime = 0;

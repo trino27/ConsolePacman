@@ -12,7 +12,7 @@ namespace CyberHW_Pacmen
         public LevelModel Level;
         public int UserScore;
 
-        private List<KeyValuePair<int, int>> empty_chars;
+        private List<KeyValuePair<int, int>> emptyCharList;
 
         private const char emptyChar = ' ';
         private const char borderChar = '#';
@@ -82,19 +82,19 @@ namespace CyberHW_Pacmen
         {
             if (Area[creation.GetLastMove.Key, creation.GetLastMove.Value] == pacmanChar)
             {
-                if (!empty_chars.Contains(new KeyValuePair<int, int>(creation.position_x, creation.position_y)))
+                if (!emptyCharList.Contains(new KeyValuePair<int, int>(creation.PositionX, creation.PositionY)))
                 {
                     UserScore++;
-                    empty_chars.Add(new KeyValuePair<int, int>(creation.position_x, creation.position_y));
+                    emptyCharList.Add(new KeyValuePair<int, int>(creation.PositionX, creation.PositionY));
                 }
-                Area[creation.position_x, creation.position_y] = pacmanChar;
+                Area[creation.PositionX, creation.PositionY] = pacmanChar;
             }
             else
             {
-                Area[creation.position_x, creation.position_y] = enemyChar;
+                Area[creation.PositionX, creation.PositionY] = enemyChar;
             }
 
-            if (empty_chars.Contains(creation.GetLastMove))
+            if (emptyCharList.Contains(creation.GetLastMove))
             {
                 Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = emptyChar;
             }
@@ -148,7 +148,7 @@ namespace CyberHW_Pacmen
         private void InitArea()
         {
             Area = new char[Level.AreaSizeX, Level.AreaSizeY];
-            empty_chars = new List<KeyValuePair<int, int>>();
+            emptyCharList = new List<KeyValuePair<int, int>>();
 
             for (int x = 0; x < Level.AreaSizeX; x++)
             {
@@ -162,13 +162,13 @@ namespace CyberHW_Pacmen
                     else if (Level.EnemiesPos.Contains(new KeyValuePair<int, int>(x, y)))
                     {
                         Area[x, y] = enemyChar;
-                        empty_chars.Add(new KeyValuePair<int, int>(x, y));
+                        emptyCharList.Add(new KeyValuePair<int, int>(x, y));
 
                     }
                     else if (Level.UserStartPosX == x && Level.UserStartPosY == y)
                     {
                         Area[x, y] = pacmanChar;
-                        empty_chars.Add(new KeyValuePair<int, int>(x, y));
+                        emptyCharList.Add(new KeyValuePair<int, int>(x, y));
                     }
                     else if (Level.FinishPosX == x && Level.FinishPosY == y)
                     {

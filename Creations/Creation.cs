@@ -6,8 +6,8 @@ namespace CyberHW_Pacmen
 {
     public abstract class Creation
     {
-        public int position_x;
-        public int position_y;
+        public int PositionX;
+        public int PositionY;
         protected int speed;
         protected KeyValuePair<int, int> lastMove;
         public KeyValuePair<int, int> GetLastMove
@@ -19,18 +19,18 @@ namespace CyberHW_Pacmen
             get { return speed; }
         }
 
-        public Creation(int pos_x, int pos_y)
+        public Creation(int posX, int posY)
         {
-            position_x = pos_x;
-            position_y = pos_y;
-            lastMove = new KeyValuePair<int, int>(position_x, position_y);
+            PositionX = posX;
+            PositionY = posY;
+            lastMove = new KeyValuePair<int, int>(PositionX, PositionY);
         }
 
-        public void Move(KeyValuePair<int, int> new_pos)
+        public void Move(KeyValuePair<int, int> newPos)
         {
-            lastMove = new KeyValuePair<int, int>(position_x, position_y);
-            position_x = new_pos.Key;
-            position_y = new_pos.Value;
+            lastMove = new KeyValuePair<int, int>(PositionX, PositionY);
+            PositionX = newPos.Key;
+            PositionY = newPos.Value;
         }
     }
 }

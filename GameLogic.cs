@@ -9,12 +9,13 @@ namespace CyberHW_Pacmen
         private Map map = new Map();
         private User user;
         private List<Enemy> enemies;
+
         private List<Thread> enemiesParameterizedThreads;
         private Thread timerParameterizedThread;
         private Object locker = -1;
-        private int enemy_thread_exist_num=0;
+        private int enemyThreadExistsCount = 0;
 
-        private bool already_lose = false;
+        private bool alreadyLose = false;
         private bool isPause = false;
 
         public int CurrentTime = 0;
@@ -47,16 +48,16 @@ namespace CyberHW_Pacmen
         private void EnemyAction(object enemy_index)
         {
             int index = (int)enemy_index;
-            this.enemies[index].LastWay = enemies[index].ChosingWay();
-            Enemy.Way new_way;
+            this.enemies[index].LastVector = enemies[index].ChosingVector();
+            Enemy.Vector new_way;
 
-            while (!already_lose && index < enemies.Count)
+            while (!alreadyLose && index < enemies.Count)
             {
                 if (!isPause)
                 {
-                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].LastWay)))
+                    if (map.IsPosAvailable(this.enemies[index].ProcessingWay(this.enemies[index].LastVector)))
                     {
-                        this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].LastWay));
+                        this.enemies[index].Move(this.enemies[index].ProcessingWay(this.enemies[index].LastVector));
                         this.map.NewCreationPos(this.enemies[index]);
                         if (Thread.CurrentThread.IsAlive)
                         {
@@ -65,10 +66,10 @@ namespace CyberHW_Pacmen
                     }
                     else
                     {
-                        new_way = enemies[index].ChosingWay();
+                        new_way = enemies[index].ChosingVector();
                         if (map.IsPosAvailable(this.enemies[index].ProcessingWay(new_way)))
                         {
-                            this.enemies[index].LastWay = new_way;
+                            this.enemies[index].LastVector = new_way;
                             this.enemies[index].Move(this.enemies[index].ProcessingWay(new_way));
                             this.map.NewCreationPos(this.enemies[index]);
                             if (Thread.CurrentThread.IsAlive)
@@ -77,7 +78,7 @@ namespace CyberHW_Pacmen
                             }
                         }
                     }
-                    if (IsKilled()) already_lose = true;
+                    if (IsKilled()) alreadyLose = true;
                 }
             }
         }
@@ -156,7 +157,7 @@ namespace CyberHW_Pacmen
                 this.map.InitMap(CurrentLevel);
                 this.user = map.InitUser();
 
-                if (!already_lose)
+                if (!alreadyLose)
                 {
                     enemies = map.InitEnemies();
                     InitEnemyThreads();
@@ -168,33 +169,36 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                for (int i = 0; i < enemy_thread_exist_num; i++)
+                for (int i = 0; i < enemyThreadExistsCount; i++)
                 {
                     this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
                 }
-                    for (int i = enemy_thread_exist_num; i < this.enemies.Count; i++)
+                for (int i = enemyThreadExistsCount; i < this.enemies.Count; i++)
                 {
                     this.enemiesParameterizedThreads.Add(new Thread(new ParameterizedThreadStart(EnemyAction)));
-                    enemy_thread_exist_num++;
+                    enemyThreadExistsCount++;
                     this.enemiesParameterizedThreads[i].Start(i);
                 }
             }
         }
         private void GameInfo()
         {
-            Console.SetCursorPosition(0, map.Level.AreaSizeY);
-            if (CurrentLevel == 0)
+            lock (locker)
             {
-                Console.WriteLine("Press D to start...\n");
+                Console.SetCursorPosition(0, map.Level.AreaSizeY);
+                if (CurrentLevel == 0)
+                {
+                    Console.WriteLine("Press D to start...\n");
+                }
+                if (this.map.Level.IsHaveTimeLimit)
+                {
+                    Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.SecLimit}");
+                }
+                else Console.WriteLine("Time(sec): Unlimited");
+                Console.WriteLine($"Level: {CurrentLevel}\nScore: {map.UserScore}\n");
+                Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End");
             }
-            if (this.map.Level.IsHaveTimeLimit)
-            {
-                Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.SecLimit}");
-            }
-            else Console.WriteLine("Time(sec): Unlimited");
-            Console.WriteLine($"Level: {CurrentLevel}\nScore: {map.UserScore}\n");
-            Console.Write("W - UP\nS - DOWN\nD - RIGHT\nA - LEFT\nP - Pause\nU - Continue\nEnter - Restart\nEsc - End");
-            
+
         }
 
         public bool IsTimeOver()
@@ -218,7 +222,7 @@ namespace CyberHW_Pacmen
             {
                 foreach (var i in this.enemies)
                 {
-                    if (this.user.position_x == i.position_x && this.user.position_y == i.position_y)
+                    if (this.user.PositionX == i.PositionX && this.user.PositionY == i.PositionY)
                     {
                         return true;
                     }
@@ -230,7 +234,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                if (this.user.position_x == this.map.Level.FinishPosX && this.user.position_y == this.map.Level.FinishPosY) return true;
+                if (this.user.PositionX == this.map.Level.FinishPosX && this.user.PositionY == this.map.Level.FinishPosY) return true;
                 else return false;
             }
         }
@@ -239,7 +243,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                already_lose = true;
+                alreadyLose = true;
                 NextLevel(-1);
             }
         }
@@ -255,14 +259,14 @@ namespace CyberHW_Pacmen
                 InitNewMap();
             }
         }
-        public void NextLevel(int lvl_i)
+        public void NextLevel(int lvlNum)
         {
             lock (locker)
             {
                 RemoveAllEnemy();
 
                 CurrentTime = 0;
-                CurrentLevel = lvl_i;
+                CurrentLevel = lvlNum;
 
                 InitNewMap();
             }
@@ -273,10 +277,10 @@ namespace CyberHW_Pacmen
             {
                 RemoveAllEnemy();
                 CurrentLevel = 0;
-                enemy_thread_exist_num = 0;
+                enemyThreadExistsCount = 0;
                 map.UserScore = 0;
                 CurrentTime = 0;
-                already_lose = false;
+                alreadyLose = false;
                 isPause = false;
                 InitNewMap();
             }
@@ -285,7 +289,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                already_lose = true;
+                alreadyLose = true;
                 if (timerParameterizedThread.IsAlive) timerParameterizedThread.IsBackground = true;
                 RemoveAllEnemy();
             }

@@ -6,53 +6,57 @@ namespace CyberHW_Pacmen
 {
     class Enemy : Creation
     {
-        public enum Way
+        public enum Vector
         {
             Up,
             Down,
             Left,
             Right
         }
-        public Way LastWay;
-        public Enemy(int pos_x, int pos_y)
-             : base(pos_x, pos_y)
+
+        public Vector LastVector;
+
+        public Enemy(int posX, int posY)
+             : base(posX, posY)
         {
             speed = 350;
         }
-        public Way ChosingWay()
+
+        public Vector ChosingVector()
         {
             Random random = new Random();
             int way = random.Next(4);
-            return (Way)way;
+            return (Vector)way;
         }
-        public KeyValuePair<int, int> ProcessingWay(Way way)
+
+        public KeyValuePair<int, int> ProcessingWay(Vector way)
         {
             
             switch (way)
             {
-                case Way.Up:
+                case Vector.Up:
                     {
-                        return new KeyValuePair<int, int>(position_x, position_y - 1);
+                        return new KeyValuePair<int, int>(PositionX, PositionY - 1);
                     }
                     break;
-                case Way.Down:
+                case Vector.Down:
                     {
-                        return new KeyValuePair<int, int>(position_x, position_y + 1);
+                        return new KeyValuePair<int, int>(PositionX, PositionY + 1);
                     }
                     break;
-                case Way.Right:
+                case Vector.Right:
                     {
-                        return new KeyValuePair<int, int>(position_x + 1, position_y);
+                        return new KeyValuePair<int, int>(PositionX + 1, PositionY);
                     }
                     break;
-                case Way.Left:
+                case Vector.Left:
                     {
-                        return new KeyValuePair<int, int>(position_x - 1, position_y);
+                        return new KeyValuePair<int, int>(PositionX - 1, PositionY);
                     }
                     break;
                 default:
                     {
-                        return new KeyValuePair<int, int>(position_x, position_y);
+                        return new KeyValuePair<int, int>(PositionX, PositionY);
                     }
                     break;
             }

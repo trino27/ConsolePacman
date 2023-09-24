@@ -7,8 +7,9 @@ namespace CyberHW_Pacmen
     class User : Creation
     {
         public ConsoleKey LastKey;
-        public User(int pos_x, int pos_y)
-             : base(pos_x, pos_y) 
+
+        public User(int posX, int posY)
+             : base(posX, posY) 
         {
             speed = 150;
         }
@@ -18,23 +19,23 @@ namespace CyberHW_Pacmen
             {
                 case ConsoleKey.W:
                     { 
-                        return new KeyValuePair<int, int>(position_x, position_y - 1);
+                        return new KeyValuePair<int, int>(PositionX, PositionY - 1);
                     } break;
                 case ConsoleKey.S: 
                     { 
-                        return new KeyValuePair<int, int>(position_x, position_y + 1);
+                        return new KeyValuePair<int, int>(PositionX, PositionY + 1);
                     } break;
                 case ConsoleKey.D: 
                     { 
-                        return new KeyValuePair<int, int>(position_x + 1, position_y);
+                        return new KeyValuePair<int, int>(PositionX + 1, PositionY);
                     } break;
                 case ConsoleKey.A: 
                     { 
-                        return new KeyValuePair<int, int>(position_x - 1, position_y);
+                        return new KeyValuePair<int, int>(PositionX - 1, PositionY);
                     } break;
                 default: 
                     { 
-                        return new KeyValuePair<int, int>(position_x, position_y); 
+                        return new KeyValuePair<int, int>(PositionX, PositionY); 
                     } break;
             }
         }

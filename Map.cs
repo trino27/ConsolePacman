@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CyberHW_Pacmen.LevelBuilder;
+using CyberHW_Pacmen.LevelBuilder.Levels;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -7,7 +9,7 @@ namespace CyberHW_Pacmen
     class Map
     {
         public char[,] Area;
-        public LevelCreator Level;
+        public LevelModel Level;
         public int UserScore;
 
         private List<KeyValuePair<int, int>> empty_chars;
@@ -21,9 +23,9 @@ namespace CyberHW_Pacmen
 
         public void ShowMap()
         {
-            for (int y = 0; y < Level.area_size_y; y++)
+            for (int y = 0; y < Level.AreaSizeY; y++)
             {
-                for (int x = 0; x < Level.area_size_x * 2; x++)
+                for (int x = 0; x < Level.AreaSizeX * 2; x++)
                 {
                     Console.SetCursorPosition(x, y);
 
@@ -61,9 +63,9 @@ namespace CyberHW_Pacmen
                     {
                         if (Thread.CurrentThread.IsAlive)
                         {
-                            if (x > 0 && x < Level.area_size_x*2-1)
+                            if (x > 0 && x < Level.AreaSizeX * 2 - 1)
                             {
-                                if (Area[(x/2)+1, y] == borderChar && Area[x/2, y] == borderChar)
+                                if (Area[(x / 2) + 1, y] == borderChar && Area[x / 2, y] == borderChar)
                                 {
                                     Console.BackgroundColor = ConsoleColor.DarkBlue;
                                 }
@@ -98,7 +100,7 @@ namespace CyberHW_Pacmen
             }
             else
             {
-                if (creation.GetLastMove.Key == Level.finish_pos_x && creation.GetLastMove.Value == Level.finish_pos_y)
+                if (creation.GetLastMove.Key == Level.FinishPosX && creation.GetLastMove.Value == Level.FinishPosY)
                 {
                     Area[creation.GetLastMove.Key, creation.GetLastMove.Value] = finishChar;
                 }
@@ -120,7 +122,7 @@ namespace CyberHW_Pacmen
             switch (lvl_num)
             {
                 case -1: { Level = new LevelLose(); } break;
-                case 0: { Level = new LevelStart(); } break;
+                case 0: { Level = new LevelStart(); ; } break;
                 case 1: { Level = new Level1(); } break;
                 case 2: { Level = new Level2(); } break;
                 case 3: { Level = new Level3(); } break;
@@ -131,12 +133,12 @@ namespace CyberHW_Pacmen
         }
         public User InitUser()
         {
-            return new User(Level.user_pos_x, Level.user_pos_y);
+            return new User(Level.UserStartPosX, Level.UserStartPosY);
         }
         public List<Enemy> InitEnemies()
         {
             List<Enemy> enemies = new List<Enemy>();
-            foreach (var i in Level.GetEnemiesPos)
+            foreach (var i in Level.EnemiesPos)
             {
                 enemies.Add(new Enemy(i.Key, i.Value));
             }
@@ -145,30 +147,30 @@ namespace CyberHW_Pacmen
 
         private void InitArea()
         {
-            Area = new char[Level.area_size_x, Level.area_size_y];
+            Area = new char[Level.AreaSizeX, Level.AreaSizeY];
             empty_chars = new List<KeyValuePair<int, int>>();
 
-            for (int x = 0; x < Level.area_size_x; x++)
+            for (int x = 0; x < Level.AreaSizeX; x++)
             {
-                for (int y = 0; y < Level.area_size_y; y++)
+                for (int y = 0; y < Level.AreaSizeY; y++)
                 {
 
-                    if (Level.GetLevelBorders.Contains(new KeyValuePair<int, int>(x, y)))
+                    if (Level.LevelBorders.Contains(new KeyValuePair<int, int>(x, y)))
                     {
                         Area[x, y] = borderChar;
                     }
-                    else if (Level.GetEnemiesPos.Contains(new KeyValuePair<int, int>(x, y)))
+                    else if (Level.EnemiesPos.Contains(new KeyValuePair<int, int>(x, y)))
                     {
                         Area[x, y] = enemyChar;
                         empty_chars.Add(new KeyValuePair<int, int>(x, y));
 
                     }
-                    else if (Level.user_pos_x == x && Level.user_pos_y == y)
+                    else if (Level.UserStartPosX == x && Level.UserStartPosY == y)
                     {
                         Area[x, y] = pacmanChar;
                         empty_chars.Add(new KeyValuePair<int, int>(x, y));
                     }
-                    else if (Level.finish_pos_x == x && Level.finish_pos_y == y)
+                    else if (Level.FinishPosX == x && Level.FinishPosY == y)
                     {
                         Area[x, y] = finishChar;
                     }

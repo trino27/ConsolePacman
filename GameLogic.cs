@@ -27,7 +27,7 @@ namespace CyberHW_Pacmen
                 enemiesParameterizedThreads = new List<Thread>();
                 InitNewMap();
                 timerParameterizedThread = new Thread(new ParameterizedThreadStart(TimerAction));
-                timerParameterizedThread.Start(this.map.Level.GetSecLimit);
+                timerParameterizedThread.Start(this.map.Level.SecLimit);
             }
         }
 
@@ -182,14 +182,14 @@ namespace CyberHW_Pacmen
         }
         private void GameInfo()
         {
-            Console.SetCursorPosition(0, map.Level.area_size_y);
+            Console.SetCursorPosition(0, map.Level.AreaSizeY);
             if (CurrentLevel == 0)
             {
                 Console.WriteLine("Press D to start...\n");
             }
             if (this.map.Level.IsHaveTimeLimit)
             {
-                Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.GetSecLimit}");
+                Console.WriteLine($"Time(sec): {CurrentTime}/{this.map.Level.SecLimit}");
             }
             else Console.WriteLine("Time(sec): Unlimited");
             Console.WriteLine($"Level: {CurrentLevel}\nScore: {map.UserScore}\n");
@@ -203,7 +203,7 @@ namespace CyberHW_Pacmen
             {
                 lock (locker)
                 {
-                    if (CurrentTime >= this.map.Level.GetSecLimit)
+                    if (CurrentTime >= this.map.Level.SecLimit)
                     {
                         return true;
                     }
@@ -230,7 +230,7 @@ namespace CyberHW_Pacmen
         {
             lock (locker)
             {
-                if (this.user.position_x == this.map.Level.finish_pos_x && this.user.position_y == this.map.Level.finish_pos_y) return true;
+                if (this.user.position_x == this.map.Level.FinishPosX && this.user.position_y == this.map.Level.FinishPosY) return true;
                 else return false;
             }
         }
